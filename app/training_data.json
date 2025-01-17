@@ -1,8 +1,26 @@
 {
-    "input_text": [
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ilog.rules.studio.model.brl:ActionRule xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:ilog.rules.studio.model.brl=\"http://ilog.rules.studio/model/brl.ecore\">\n  <name>BBV，四川手续费大于42%，提交总公司核保</name>\n  <uuid>60a3ee51-544d-463a-902b-5404162fefc8</uuid>\n  <locale>zh_CN</locale>\n  <definition><![CDATA[预定义\n\n\t指定 '手续费明细表' 为  一个手续费/ 经纪费信息明细 来自( in )    '核保输入信息' 投保单信息  的手续费/ 经纪费信息明细列表  符合条件： 当前这个手续费/ 经纪费信息明细 的费用类型 是 \"01\";\n  \n如果\n('核保输入信息' . 海外标志 是 \"1\"\n\t并且 '核保输入信息' 投保单信息 险类代码 不是 {\"08\",\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\"} 中的一个  )不成立\n\t并且 \n '核保输入信息' 投保单 信息 产品代码   是 \"BBV\"\n\n  并且 '核保输入信息' 的机构类 的分公司代码标识 是 \"51\"\n 并且 '手续费明细表' 的费用比例 大于 42\n \n  \n那么 设置 '核保结果信息' 的人工核保权限级别为 \"101\" ;\n 设置 '核保结果信息' 的提示原因为 \"BBV,四川,手续费比例大于42%,提交总公司核保\" ;\n  ]]></definition>\n</ilog.rules.studio.model.brl:ActionRule>"
-    ],
-    "output_text": [
-      "{\n    \"name\": \"BBV，四川手续费大于42%，提交总公司核保\",\n    \"uuid\": \"60a3ee51-544d-463a-902b-5404162fefc8\",\n    \"locale\": \"zh_CN\",\n    \"conditions\": [\n        {\n            \"field\": \"核保输入信息.海外标志\",\n            \"operator\": \"=\",\n            \"value\": \"1\"\n        },\n        {\n            \"field\": \"核保输入信息.投保单信息.险类代码\",\n            \"operator\": \"not in\",\n            \"value\": [\n                \"08\",\n                \"13\",\n                \"14\",\n                \"15\",\n                \"16\",\n                \"17\",\n                \"18\",\n                \"19\"\n            ]\n        },\n        {\n            \"field\": \"核保输入信息.投保单信息.产品代码\",\n            \"operator\": \"=\",\n            \"value\": \"BBV\"\n        },\n        {\n            \"field\": \"核保输入信息.机构类.分公司代码标识\",\n            \"operator\": \"=\",\n            \"value\": \"51\"\n        },\n        {\n            \"field\": \"手续费明细表.费用比例\",\n            \"operator\": \">\",\n            \"value\": 42\n        }\n    ],\n    \"actions\": [\n        {\n            \"field\": \"核保结果信息.人工核保权限级别\",\n            \"value\": \"101\"\n        },\n        {\n            \"field\": \"核保结果信息.提示原因\",\n            \"value\": \"BBV,四川,手续费比例大于42%,提交总公司核保\"\n        }\n    ]\n}"
-    ]
-  }
+  "input_text": [
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Test Rule</Name><Condition field=\"field1\" operator=\">\" value=\"42\" /><Action field=\"field2\" value=\"Submit\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Rule 2</Name><Condition field=\"fieldA\" operator=\"<\" value=\"100\" /><Action field=\"fieldB\" value=\"Approve\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Rule 3</Name><Condition field=\"fieldX\" operator=\"=\" value=\"5\" /><Condition field=\"fieldY\" operator=\"in\" value=\"[1,2,3]\" /><Action field=\"fieldZ\" value=\"Reject\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Age Check</Name><Condition field=\"age\" operator=\">\" value=\"18\" /><Action field=\"status\" value=\"Eligible\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Threshold Rule</Name><Condition field=\"threshold\" operator=\">\" value=\"50\" /><Action field=\"alert\" value=\"Send Email\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Discount Eligibility</Name><Condition field=\"spending\" operator=\">=\" value=\"1000\" /><Action field=\"discount\" value=\"20%\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>VIP Membership</Name><Condition field=\"points\" operator=\">\" value=\"100\" /><Action field=\"membership\" value=\"VIP\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Risk Assessment</Name><Condition field=\"age\" operator=\"<\" value=\"25\" /><Condition field=\"income\" operator=\">\" value=\"5000\" /><Action field=\"riskLevel\" value=\"Low\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Premium Check</Name><Condition field=\"premium\" operator=\">\" value=\"2000\" /><Action field=\"status\" value=\"Premium Customer\" /></Rule>",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Rule><Name>Eligibility Check</Name><Condition field=\"age\" operator=\">\" value=\"21\" /><Condition field=\"income\" operator=\">\" value=\"3000\" /><Action field=\"status\" value=\"Eligible for loan\" /></Rule>"
+  ],
+  "output_text": [
+    "{\"name\":\"Test Rule\",\"conditions\":[{\"field\":\"field1\",\"operator\":\">\",\"value\":42}],\"actions\":[{\"field\":\"field2\",\"value\":\"Submit\"}]}",
+    "{\"name\":\"Rule 2\",\"conditions\":[{\"field\":\"fieldA\",\"operator\":\"<\",\"value\":100}],\"actions\":[{\"field\":\"fieldB\",\"value\":\"Approve\"}]}",
+    "{\"name\":\"Rule 3\",\"conditions\":[{\"field\":\"fieldX\",\"operator\":\"=\",\"value\":5},{\"field\":\"fieldY\",\"operator\":\"in\",\"value\":[1,2,3]}],\"actions\":[{\"field\":\"fieldZ\",\"value\":\"Reject\"}]}",
+    "{\"name\":\"Age Check\",\"conditions\":[{\"field\":\"age\",\"operator\":\">\",\"value\":18}],\"actions\":[{\"field\":\"status\",\"value\":\"Eligible\"}]}",
+    "{\"name\":\"Threshold Rule\",\"conditions\":[{\"field\":\"threshold\",\"operator\":\">\",\"value\":50}],\"actions\":[{\"field\":\"alert\",\"value\":\"Send Email\"}]}",
+    "{\"name\":\"Discount Eligibility\",\"conditions\":[{\"field\":\"spending\",\"operator\":\">=\",\"value\":1000}],\"actions\":[{\"field\":\"discount\",\"value\":\"20%\"}]}",
+    "{\"name\":\"VIP Membership\",\"conditions\":[{\"field\":\"points\",\"operator\":\">\",\"value\":100}],\"actions\":[{\"field\":\"membership\",\"value\":\"VIP\"}]}",
+    "{\"name\":\"Risk Assessment\",\"conditions\":[{\"field\":\"age\",\"operator\":\"<\",\"value\":25},{\"field\":\"income\",\"operator\":\">\",\"value\":5000}],\"actions\":[{\"field\":\"riskLevel\",\"value\":\"Low\"}]}",
+    "{\"name\":\"Premium Check\",\"conditions\":[{\"field\":\"premium\",\"operator\":\">\",\"value\":2000}],\"actions\":[{\"field\":\"status\",\"value\":\"Premium Customer\"}]}",
+    "{\"name\":\"Eligibility Check\",\"conditions\":[{\"field\":\"age\",\"operator\":\">\",\"value\":21},{\"field\":\"income\",\"operator\":\">\",\"value\":3000}],\"actions\":[{\"field\":\"status\",\"value\":\"Eligible for loan\"}]}"
+  ]
+}

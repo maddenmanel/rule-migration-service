@@ -3,7 +3,7 @@ from datasets import Dataset
 import os
 import json
 
-def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str = "t5-small"):
+def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str = "t5-base"):
     """
     Fine-tune the T5 model using data from a specified file.
 
@@ -21,7 +21,7 @@ def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str 
             data = json.load(f)
 
         dataset = Dataset.from_dict(data)
-        tokenizer = T5Tokenizer.from_pretrained(model_name)
+        tokenizer = T5Tokenizer.from_pretrained(model_name, legacy=False)
         model = T5ForConditionalGeneration.from_pretrained(model_name)
 
         def preprocess_data(examples):
@@ -39,7 +39,7 @@ def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str 
             save_steps=500,
             save_total_limit=2,
             logging_dir='./logs',
-            evaluation_strategy="no",
+            eval_strategy ="no",
         )
 
         trainer = Trainer(
@@ -60,5 +60,5 @@ def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str 
 
 
 if __name__ == "__main__":
-    training_file = "./training_data.json"
+    training_file = "D:/project/rule-migration-service/app/training_data.json"
     fine_tune_model(data_file=training_file)
