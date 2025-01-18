@@ -6,10 +6,10 @@ from app.rule_converter import RuleConverter
 
 app = FastAPI()
 
-# 初始化 RuleConverter
+# Init RuleConverter
 converter = RuleConverter()
 
-# 请求和响应模型
+# Request and Response models
 class RuleRequest(BaseModel):
     xml_rule: str
 

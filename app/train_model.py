@@ -3,7 +3,7 @@ from datasets import Dataset
 import os
 import json
 
-def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str = "t5-base"):
+def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str = "t5-large"):
     """
     Fine-tune the T5 model using data from a specified file.
 
@@ -22,7 +22,7 @@ def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str 
 
         dataset = Dataset.from_dict(data)
         tokenizer = T5Tokenizer.from_pretrained(model_name, legacy=False)
-        model = T5ForConditionalGeneration.from_pretrained(model_name)
+        model = T5ForConditionalGeneration.from_pretrained(model_name, use_cache=False)
 
         def preprocess_data(examples):
             inputs = tokenizer(examples["input_text"], max_length=512, truncation=True, padding="max_length")
@@ -34,8 +34,9 @@ def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str 
 
         training_args = TrainingArguments(
             output_dir="./results",
-            num_train_epochs=3,
-            per_device_train_batch_size=8,
+            num_train_epochs=5,
+            per_device_train_batch_size=16,  # Use smaller batch size
+            gradient_accumulation_steps=8, 
             save_steps=500,
             save_total_limit=2,
             logging_dir='./logs',
@@ -60,5 +61,5 @@ def fine_tune_model(data_file: str, model_dir: str = "./model", model_name: str 
 
 
 if __name__ == "__main__":
-    training_file = "D:/project/rule-migration-service/app/training_data.json"
+    training_file = "app/training_data.json"
     fine_tune_model(data_file=training_file)

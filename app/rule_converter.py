@@ -1,11 +1,12 @@
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 import os
 import json
+import torch
 
 class RuleConverter:
-    def __init__(self, model_dir: str = "./model", pretrained_model: str = "t5-small"):
+    def __init__(self, model_dir: str = "./model", pretrained_model: str = "t5-large"):
         """
-        初始化 T5 模型和分词器
+        Initialize the RuleConverter with the model directory and the pre-trained model name.
         """
         self.model_dir = model_dir
         self.pretrained_model = pretrained_model
@@ -13,42 +14,80 @@ class RuleConverter:
 
     def _load_model(self):
         """
-        加载训练后的模型，如果不存在则加载预训练模型
+        Load the pre-trained or fine-tuned T5 model.
         """
-        if os.path.exists(self.model_dir):
-            print("Loading fine-tuned model...")
-            self.tokenizer = T5Tokenizer.from_pretrained(self.model_dir)
-            self.model = T5ForConditionalGeneration.from_pretrained(self.model_dir)
-        else:
-            print("Loading pre-trained model...")
-            self.tokenizer = T5Tokenizer.from_pretrained(self.pretrained_model)
-            self.model = T5ForConditionalGeneration.from_pretrained(self.pretrained_model)
+        # if os.path.exists(self.model_dir):
+        #     print("Loading fine-tuned model...")
+        #     self.tokenizer = T5Tokenizer.from_pretrained(self.model_dir)
+        #     self.model = T5ForConditionalGeneration.from_pretrained(self.model_dir)
+        # else:
+        print("Loading pre-trained model...")
+        self.tokenizer = T5Tokenizer.from_pretrained(self.pretrained_model)
+        self.model = T5ForConditionalGeneration.from_pretrained(self.pretrained_model)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        model = self.model.to(device)
 
     def reload_model(self):
         """
-        手动重新加载模型
+        Manually reload the model after training.
         """
         self._load_model()
+    
+    def convert_rule(self, xml_rule: str) -> str:
+        """
+        Convert an XML rule to JSON format using the pre-trained model.
+        """
+        # Prepare the prompt with the example XML to JSON conversion.
+        prompt = f"""
+        Convert the following XML rule into a JSON format. Output the JSON representation.
 
-    def convert_rule(self, input_rule: str) -> str:
+        Example:
+        XML:
+        <Rule>
+            <Name>Example Rule</Name>
+            <Condition field="field1" operator=">" value="50" />
+            <Action field="field2" value="Approve" />
+        </Rule>
+        JSON:
+        {{
+            "Rule": {{
+                "Name": "Example Rule",
+                "Condition": {{
+                    "field": "field1",
+                    "operator": ">",
+                    "value": "50"
+                }},
+                "Action": {{
+                    "field": "field2",
+                    "value": "Approve"
+                }}
+            }}
+        }}
+
+        Now, convert the following XML rule:
+        {xml_rule}
         """
-        使用 T5 模型将 XML 规则转换为 JSON
+        print("The convert XML is \n" + prompt)
+
+        # Use the model to get the result
+        answer = self.answer_question(prompt)
+
+        print("The answer result is \n" + answer)
+        
+        return answer
+
+    def answer_question(self, question: str) -> str:
         """
-        # 准备包含 XML 输入的提示
-        prompt = f"Convert the following XML rule to standard JSON format:\n{input_rule}\nOutput JSON:"
-        
-        # 对输入进行分词
-        inputs = self.tokenizer.encode(prompt, return_tensors="pt", max_length=1024, truncation=True)
-        
-        # 使用模型生成输出
+        Use the pre-trained T5 model to answer a question in a chatbot-like manner.
+        This method returns the raw output from the T5 model based on the question.
+        """
+        # Tokenizing the input prompt
+        inputs = self.tokenizer.encode(question, return_tensors="pt", max_length=1024, truncation=True)
+
+        # Generating the model's output
         outputs = self.model.generate(inputs, max_length=1024, num_beams=4, early_stopping=True)
-        
-        # 解码输出并返回 JSON 字符串
+
+        # Decoding the output to get a human-readable string
         result = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-        # 使用 json.loads() 来验证并格式化输出为标准 JSON
-        try:
-            json_output = json.loads(result)
-            return json.dumps(json_output, indent=2)  # 格式化输出为漂亮的 JSON
-        except json.JSONDecodeError:
-            return f"Error: Unable to decode JSON: {result}"
+        return result 
